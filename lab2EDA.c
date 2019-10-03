@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 /*
  struct pixel:
@@ -42,23 +43,110 @@ nodo* crearNodo(int valor){
   nodoCrear->sig = NULL;
   return nodoCrear;
   }
-
 nodo* ingresar(nodo* nodoR,int datoAgregar){
+  nodo* nuevoNodo = crearNodo(datoAgregar);
+  nodo* aux = nodoR;
+  nodo* aux2;
   if(nodoR == NULL){
       nodoR = crearNodo(datoAgregar);
       return nodoR;
     }
-  nodo* nuevoNodo = crearNodo(datoAgregar);
-  nodo* aux = nodoR;
+  if(aux->sig == NULL){
+    if(aux->dato < datoAgregar){
+      aux->sig = nuevoNodo;
+      return nodoR;
+      }
+    nuevoNodo->sig = aux;
+    nodoR = nuevoNodo;
+    return nodoR;
+    }
+    if(aux->dato > datoAgregar){
+    nuevoNodo->sig = aux;
+    nodoR = nuevoNodo;
+    return nodoR;
+    }
   while(aux->sig != NULL){
+    if(aux->dato > datoAgregar){
+      nuevoNodo->sig = aux;
+      aux2->sig = nuevoNodo;
+      return nodoR;
+      }
+    aux2 = aux;
     aux = aux->sig;
     }
+    if(aux->dato > datoAgregar){
+      nuevoNodo->sig = aux;
+      aux2->sig = nuevoNodo;
+      return nodoR;
+      }
   aux->sig = nuevoNodo;
   return nodoR;
 }
 
+float promedio(nodo* lista){
+	float prom = 0.0;
+	int cont = 0;
+	nodo* aux = lista;
+	while(aux != NULL){
+		cont += 1;
+		prom += aux->dato;
+		aux = aux->sig;
+	}
+	
+	return prom/cont;
+}
 
+int encontrarMenor(nodo*lista){
+	int menor = lista->dato;
+	nodo* aux = lista;
+	while(aux != NULL){
+		if(aux->dato < menor){
+			menor = aux->dato;
+		}
+		aux = aux->sig;
+	}
+	return menor;
+}
 
+int encontrarMayor(nodo*lista){
+	int mayor = lista->dato;
+	nodo* aux = lista;
+	while(aux != NULL){
+		if(aux->dato > mayor){
+			mayor = aux->dato;
+		}
+		aux = aux->sig;
+	}
+	return mayor;
+}
+float desvEst(nodo* lista){
+	float desv = 0;
+	int cont = 0;
+	float datoAux;
+	float prom = promedio(lista);
+	nodo* aux = lista;
+	while(aux != NULL){
+		desv += pow((aux->dato - prom),2);
+		cont += 1;
+		aux = aux->sig;
+	}
+	return sqrt(desv/cont);
+}
+
+float mediana(nodo* lista){
+	nodo* aux1 = lista;
+	nodo* aux2 = lista;
+	while(aux1 != NULL){
+		if(aux2 == NULL){//par
+			return (aux1->dato + aux1->dato)/2;
+		}
+		if(aux2->sig == NULL){//impar
+			return aux1->dato;
+		}
+		aux2 = (aux2->sig)->sig;
+		aux1 = aux1->sig;
+	}
+}
 /*
 leerMatriz: Función que lee un archivo de la forma:
 <numColumnas> <numFilas>
@@ -126,6 +214,7 @@ void imprimirListaEnlazada(nodo* L){
 		printf("%d   ",L->dato);
 		L = L->sig;
 	}
+	printf("\n");
 
 	return;
 }
@@ -197,7 +286,7 @@ nodo* buscarMatriz(CM matriz1,CM matriz2){
 						if(comparadorPixel(matriz2.matriz[k][w],matriz1.matriz[matriz2.filas - 1 - k + i][matriz2.columnas - 1 - w + j]) == 0){
 							verif = 1;
 						}
-						similitud+=1;
+						similitud += 1;
 					}
 				}
 				nodoR = ingresar(nodoR,similitud);
@@ -237,6 +326,11 @@ int main(){
 	CM matriz2 = leerMatriz(nombre2);
 	nodo* L = buscarMatriz(matriz1,matriz2);
 	imprimirListaEnlazada(L);
+	printf("La media es: %f\n",promedio(L));
+	printf("El dato menor es: %d\n",encontrarMenor(L));
+	printf("El dato mayor es: %d\n",encontrarMayor(L));
+	printf("La desviacion es: %f\n",desvEst(L));
+	printf("La mediana es: %f\n",mediana(L));
 	return 0;
 }
 

@@ -42,6 +42,7 @@ nodo* crearNodo(int valor){
   nodoCrear->sig = NULL;
   return nodoCrear;
   }
+
 nodo* ingresar(nodo* nodoR,int datoAgregar){
   if(nodoR == NULL){
       nodoR = crearNodo(datoAgregar);
@@ -239,7 +240,8 @@ int main(){
 	return 0;
 }
 
-/*#include <stdio.h>
+/*
+#include <stdio.h>
 #include <stdlib.h>
 
 struct nodo{
@@ -261,21 +263,41 @@ nodo* crearNodo(int valor){
   return nodoCrear;
   }
 nodo* ingresar(nodo* nodoR,int datoAgregar){
+  nodo* nuevoNodo = crearNodo(datoAgregar);
+  nodo* aux = nodoR;
+  nodo* aux2;
   if(nodoR == NULL){
       nodoR = crearNodo(datoAgregar);
       return nodoR;
     }
-  nodo* nuevoNodo = crearNodo(datoAgregar);
-  nodo* aux = nodoR;
-  while(aux->sig != NULL){
+  if(aux->sig == NULL){
     if(aux->dato < datoAgregar){
-      nodo*aux2 = aux->sig;
       aux->sig = nuevoNodo;
-      nuevoNodo->sig = aux2;
       return nodoR;
       }
+    nuevoNodo->sig = aux;
+    nodoR = nuevoNodo;
+    return nodoR;
+    }
+    if(aux->dato > datoAgregar){
+    nuevoNodo->sig = aux;
+    nodoR = nuevoNodo;
+    return nodoR;
+    }
+  while(aux->sig != NULL){
+    if(aux->dato > datoAgregar){
+      nuevoNodo->sig = aux;
+      aux2->sig = nuevoNodo;
+      return nodoR;
+      }
+    aux2 = aux;
     aux = aux->sig;
     }
+    if(aux->dato > datoAgregar){
+      nuevoNodo->sig = aux;
+      aux2->sig = nuevoNodo;
+      return nodoR;
+      }
   aux->sig = nuevoNodo;
   return nodoR;
 }
@@ -288,4 +310,5 @@ int main() {
   nodoR = ingresar(nodoR,7);
   nodoR = ingresar(nodoR,4);
   return 0;
-}*/
+}
+*/

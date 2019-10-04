@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <time.h>
 
 /*
  struct pixel:
@@ -25,24 +26,40 @@ struct conjuntoMatriz{
 	int columnas;
 }typedef CM;
 
+/*
+struct nodo:
+Almacena un entero, y el puntero al nodo siguiente. En el caso de no tener siguiente, es NULL.
+
+ */
 struct nodo{
 	int dato;
 	struct nodo* sig;
 }typedef nodo;
 
 
-
+/*
+Función constructora del TDA lista
+ */
 nodo* inicializar(){
     nodo* nodoR = NULL;
     return nodoR;
 }
 
+/* 
+Función constructora del nodo. Recibe un entero para que tenga un valor.
+*/
 nodo* crearNodo(int valor){
   nodo* nodoCrear = (nodo*)malloc(sizeof(nodo));
   nodoCrear->dato = valor;
   nodoCrear->sig = NULL;
   return nodoCrear;
   }
+
+/* 
+insertar: Inserta ordenado a una lista enlazada (que ya esté ordenada).
+entradas: puntero a nodo y el entero que se quiera agregar.
+salida: el puntero a nodo con ese entero ubicado ordenadamente de menor a mayor.
+*/
 nodo* ingresar(nodo* nodoR,int datoAgregar){
   nodo* nuevoNodo = crearNodo(datoAgregar);
   nodo* aux = nodoR;
@@ -83,6 +100,20 @@ nodo* ingresar(nodo* nodoR,int datoAgregar){
   return nodoR;
 }
 
+
+/*  
+
+Funciones estadísticas para listas enlazadas:
+promedio
+encontrarMenor
+encontrarMayor
+desvEst
+mediana
+Entrada: Una lista enlazada (puntero a nodo)
+salida: Número (float o entero, dependiendo), dandonos el resultado pedido.
+
+
+*/
 float promedio(nodo* lista){
 	float prom = 0.0;
 	int cont = 0;
@@ -257,7 +288,9 @@ nodo* buscarMatriz(CM matriz1,CM matriz2){
 						if(comparadorPixel(matriz2.matriz[k][w],matriz1.matriz[k+i][w+j]) == 0){
 							verif = 1;
 						}
-						similitud += 1;
+						else{
+							similitud += 1;	
+						}
 					}
 				}
 				nodoR = ingresar(nodoR,similitud);
@@ -271,7 +304,9 @@ nodo* buscarMatriz(CM matriz1,CM matriz2){
 						if(comparadorPixel(matriz2.matriz[k][w],matriz1.matriz[w+i][matriz2.filas - 1 - k + j]) == 0){
 							verif = 1;
 						}
-						similitud+=1;
+						else{
+							similitud += 1;	
+						}
 					}
 				}
 				nodoR = ingresar(nodoR,similitud);
@@ -286,7 +321,9 @@ nodo* buscarMatriz(CM matriz1,CM matriz2){
 						if(comparadorPixel(matriz2.matriz[k][w],matriz1.matriz[matriz2.filas - 1 - k + i][matriz2.columnas - 1 - w + j]) == 0){
 							verif = 1;
 						}
-						similitud += 1;
+						else{
+							similitud += 1;	
+						}
 					}
 				}
 				nodoR = ingresar(nodoR,similitud);
@@ -300,7 +337,10 @@ nodo* buscarMatriz(CM matriz1,CM matriz2){
 						if(comparadorPixel(matriz2.matriz[k][w],matriz1.matriz[matriz2.columnas - 1 - w + i][k+j]) == 0){
 							verif = 1;
 						}
-						similitud += 1;
+						else{
+							similitud += 1;	
+						}
+						
 					}
 				}
 				nodoR = ingresar(nodoR,similitud);
@@ -322,87 +362,30 @@ int main(){
 	printf("\n");
 	strcat(nombre1,".in");
 	strcat(nombre2,".in");
+	clock_t inicio = clock();
+
+
+
+
 	CM matriz1 = leerMatriz(nombre1);
 	CM matriz2 = leerMatriz(nombre2);
 	nodo* L = buscarMatriz(matriz1,matriz2);
 	imprimirListaEnlazada(L);
-	printf("La media es: %f\n",promedio(L));
-	printf("El dato menor es: %d\n",encontrarMenor(L));
-	printf("El dato mayor es: %d\n",encontrarMayor(L));
-	printf("La desviacion es: %f\n",desvEst(L));
-	printf("La mediana es: %f\n",mediana(L));
+	FILE* archivo = fopen("datos.out","w");
+	fprintf(archivo,"La media es: %f\n",promedio(L));
+	fprintf(archivo,"El dato menor es: %d\n",encontrarMenor(L));
+	fprintf(archivo,"El dato mayor es: %d\n",encontrarMayor(L));
+	fprintf(archivo,"La desviacion es: %f\n",desvEst(L));
+	fprintf(archivo,"La mediana es: %f\n",mediana(L));
+	fclose(archivo);
+
+
+
+	clock_t fin = clock();
+	double time_taken = (double)(fin-inicio)/CLOCKS_PER_SEC;
+	
+	printf("Se demora %f segundos en ejecutar\n",time_taken);
+
 	return 0;
 }
 
-/*
-#include <stdio.h>
-#include <stdlib.h>
-
-struct nodo{
-    int dato;
-    struct nodo* sig;
-}typedef nodo;
-
-
-
-nodo* inicializar(){
-    nodo* nodoR = NULL;
-    return nodoR;
-}
-
-nodo* crearNodo(int valor){
-  nodo* nodoCrear = (nodo*)malloc(sizeof(nodo));
-  nodoCrear->dato = valor;
-  nodoCrear->sig = NULL;
-  return nodoCrear;
-  }
-nodo* ingresar(nodo* nodoR,int datoAgregar){
-  nodo* nuevoNodo = crearNodo(datoAgregar);
-  nodo* aux = nodoR;
-  nodo* aux2;
-  if(nodoR == NULL){
-      nodoR = crearNodo(datoAgregar);
-      return nodoR;
-    }
-  if(aux->sig == NULL){
-    if(aux->dato < datoAgregar){
-      aux->sig = nuevoNodo;
-      return nodoR;
-      }
-    nuevoNodo->sig = aux;
-    nodoR = nuevoNodo;
-    return nodoR;
-    }
-    if(aux->dato > datoAgregar){
-    nuevoNodo->sig = aux;
-    nodoR = nuevoNodo;
-    return nodoR;
-    }
-  while(aux->sig != NULL){
-    if(aux->dato > datoAgregar){
-      nuevoNodo->sig = aux;
-      aux2->sig = nuevoNodo;
-      return nodoR;
-      }
-    aux2 = aux;
-    aux = aux->sig;
-    }
-    if(aux->dato > datoAgregar){
-      nuevoNodo->sig = aux;
-      aux2->sig = nuevoNodo;
-      return nodoR;
-      }
-  aux->sig = nuevoNodo;
-  return nodoR;
-}
-
-
-int main() {
-  nodo* nodoR = inicializar();
-  nodoR = ingresar(nodoR,10);
-  nodoR = ingresar(nodoR,5);
-  nodoR = ingresar(nodoR,7);
-  nodoR = ingresar(nodoR,4);
-  return 0;
-}
-*/
